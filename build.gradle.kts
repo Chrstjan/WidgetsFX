@@ -26,7 +26,7 @@ application {
     mainClass.set("io.github.chrstjan.widgetsfx.Main")
 }
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 javafx {
