@@ -1,6 +1,10 @@
+@file:Suppress("unused")
+
 package io.github.chrstjan.widgetsfx.layouts.labels
 
 import io.github.chrstjan.widgetsfx.layouts.extensions.addStyle
+import io.github.chrstjan.widgetsfx.layouts.plusAssign
+import javafx.beans.property.StringProperty
 import javafx.beans.value.ObservableObjectValue
 import javafx.beans.value.ObservableStringValue
 import javafx.scene.Node
@@ -93,12 +97,33 @@ fun labelOf(value: ObservableStringValue, styleClass: String, graphicProperty: O
     Label() bindTo value bindGraphics graphicProperty addStyle styleClass
 
 /**
+ * Factory function that creates a [Label] styled with the provided [LabelStyle] and static text
+ *
+ * @param value The static text for the Label
+ * @param style The style to apply for the Label,
+ * [LabelStyle.H1] styled as default
+ *
+ * @return [Label]
+ */
+fun hOf(value: String, style: LabelStyle = LabelStyle.H1, graphic: Node? = null) = Label(value, graphic) styleAs style
+
+/**
+ * Factory function that creates a [Label] styled with the provided [LabelStyle] and with a bound text property
+ *
+ * @param value The Label's bound external ObservableStringProperty
+ * @param style The style to apply for the Label,
+ * [LabelStyle.H1] styled as default
+ */
+fun hOf(value: ObservableStringValue, style: LabelStyle = LabelStyle.H1, graphic: Node? = null) =
+    Label("", graphic) styleAs style bindTo value
+
+/**
  * Factory method that creates a [LabelStyle.H1] styled [Label] with static text
  *
  * @param value The static text for the Label
  * @return [Label]
  */
-fun h1Of(value: String, graphic: Node? = null) = Label(value, graphic) styleAs LabelStyle.H1
+fun h1Of(value: String, graphic: Node? = null) = hOf(value, LabelStyle.H1, graphic)
 
 /**
  * Factory method that creates a [LabelStyle.H1] styled [Label] with a bound text property
@@ -106,4 +131,105 @@ fun h1Of(value: String, graphic: Node? = null) = Label(value, graphic) styleAs L
  * @param value The Label's bound external ObservableStringProperty
  * @return [Label]
  */
-fun h1Of(value: ObservableStringValue, graphic: Node? = null) = Label("", graphic) styleAs LabelStyle.H1 bindTo value
+fun h1Of(value: ObservableStringValue, graphic: Node? = null) = hOf(value, LabelStyle.H1, graphic)
+
+/**
+ * Factory method that creates a [LabelStyle.H2] styled [Label] with static text
+ *
+ * @param value The static text for the Label
+ * @return [Label]
+ */
+fun h2Of(value: String, graphic: Node? = null) = hOf(value, LabelStyle.H2, graphic)
+
+/**
+ * Factory method that creates a [LabelStyle.H2] styled [Label] with a bound text property
+ *
+ * @param value The Label's bound external ObservableStringProperty
+ * @return [Label]
+ */
+fun h2Of(value: ObservableStringValue, graphic: Node? = null) = hOf(value, LabelStyle.H2, graphic)
+
+/**
+ * Factory method that creates a [LabelStyle.H3] styled [Label] with static text
+ *
+ * @param value The static text for the Label
+ * @return [Label]
+ */
+fun h3Of(value: String, graphic: Node? = null) = hOf(value, LabelStyle.H3, graphic)
+
+/**
+ * Factory method that creates a [LabelStyle.H3] styled [Label] with a bound text property
+ *
+ * @param value The Label's bound external ObservableStringProperty
+ * @return [Label]
+ */
+fun h3Of(value: ObservableStringValue, graphic: Node? = null) = hOf(value, LabelStyle.H3, graphic)
+
+/**
+ * Factory method that creates a [LabelStyle.H4] styled [Label] with static text
+ *
+ * @param value The static text for the Label
+ * @return [Label]
+ */
+fun h4Of(value: String, graphic: Node? = null) = hOf(value, LabelStyle.H4, graphic)
+
+/**
+ * Factory method that creates a [LabelStyle.H4] styled [Label] with a bound text property
+ *
+ * @param value The Label's bound external ObservableStringProperty
+ * @return [Label]
+ */
+fun h4Of(value: ObservableStringValue, graphic: Node? = null) = hOf(value, LabelStyle.H4, graphic)
+
+/**
+ * Factory method that creates a [LabelStyle.H5] styled [Label] with static text
+ *
+ * @param value The static text for the Label
+ * @return [Label]
+ */
+fun h5Of(value: String, graphic: Node? = null) = hOf(value, LabelStyle.H5, graphic)
+
+/**
+ * Factory method that creates a [LabelStyle.H5] styled [Label] with a bound text property
+ *
+ * @param value The Label's bound external ObservableStringProperty
+ * @return [Label]
+ */
+fun h5Of(value: ObservableStringValue, graphic: Node? = null) = hOf(value, LabelStyle.H5, graphic)
+
+/**
+ * Factory method that creates a [LabelStyle.H6] styled [Label] with static text
+ *
+ * @param value The static text for the Label
+ * @return [Label]
+ */
+fun h6Of(value: String, graphic: Node? = null) = hOf(value, LabelStyle.H6, graphic)
+
+/**
+ * Factory method that creates a [LabelStyle.H6] styled [Label] with a bound text property
+ *
+ * @param value The Label's bound external ObservableStringProperty
+ * @return [Label]
+ */
+fun h6Of(value: ObservableStringValue, graphic: Node? = null) = hOf(value, LabelStyle.H6, graphic)
+
+/**
+ * Factory method that creates a [LabelStyle.DATA] Label with static text
+ *
+ * @param value The static text for the Label
+ * @return [Label]
+ */
+fun dataOf(value: String) = Label(value) styleAs LabelStyle.DATA
+
+/**
+ * Factory method that creates a [LabelStyle.DATA] Label with a textProperty bound to an external Property
+ *
+ * @param value The external Property to bind to the Text property
+ * @return [Label]
+ */
+fun dataOf(value: ObservableStringValue) = Label() styleAs LabelStyle.DATA bindTo value
+
+/**
+ * += Operator definition that binds another StringProperty to the Label's Text property
+ */
+operator fun Labeled.plusAssign(otherProperty: StringProperty) = run { textProperty() += otherProperty }
