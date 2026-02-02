@@ -6,6 +6,7 @@ import javafx.beans.binding.Bindings
 import javafx.beans.property.Property
 import javafx.beans.property.StringProperty
 import javafx.scene.control.TextField
+import javafx.scene.control.TextFormatter
 import javafx.scene.layout.Region
 import javafx.util.converter.NumberStringConverter
 
@@ -55,3 +56,43 @@ fun decimalField(contents: Property<Number>) = TextField().apply {
     Bindings.bindBidirectional(textProperty(), contents, NumberStringConverter())
     styleClass += "data-text"
 }
+
+/**
+ * Factory method that creates a customized configured [TextField] for fixed spaced decimal digits entries.
+ * See [FixedDecimalFilter]
+ *
+ * @param boundProperty [Property<Double>] to bidirectionally bind to the [TextField]
+ * @param decimalPlaces The amount of decimal digits for the user input
+ * @param maxWidth (Optional:) The maximum width of the [TextField]
+ */
+fun decimalField(boundProperty: Property<Double>, decimalPlaces: Int, maxWidth: Double = Region.USE_COMPUTED_SIZE) =
+    TextField().apply {
+        this.maxWidth = maxWidth
+
+        val textFormatter = TextFormatter(
+            FixedDecimalConverter(decimalPlaces),
+            boundProperty.value,
+            FixedDecimalFilter(decimalPlaces)
+        )
+        this.textFormatter = textFormatter
+        boundProperty.bindBidirectional(textFormatter.valueProperty())
+    }
+
+/**
+ * Factory method that creates a [TextField] bound bidirectionally to an external [javafx.beans.property.IntegerProperty]
+ *
+ * @param boundProperty [Property<Int>] to bidirectionally bind to the [TextField]
+ * @param maxWidth (Optional:) The maximum width of the [TextField]
+ */
+fun integerField(boundProperty: Property<Int>, maxWidth: Double = Region.USE_COMPUTED_SIZE) =
+    TextField().apply {
+        this.maxWidth = maxWidth
+
+        val textFormatter = TextFormatter(
+            ZeroIntegerStringConverter(),
+            boundProperty.value,
+            IntegerFilter()
+        )
+        this.textFormatter = textFormatter
+        boundProperty.bindBidirectional(textFormatter.valueProperty())
+    }

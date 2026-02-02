@@ -43,7 +43,9 @@ class FixedDecimalConverter(private val decimalPlaces: Int) : DoubleStringConver
 /**
  * [javafx.scene.control.TextField] Filter util that supports fixed place decimal inputs.
  *
- * @param decimalPlaces The number of decimal places to be used in the data entry
+ * @param decimalPlaces The number of decimal places to be used in the data entry.
+ *
+ *      2 -> x.xx, 1 -> x.x
  */
 class FixedDecimalFilter(private val decimalPlaces: Int): UnaryOperator<TextFormatter.Change?> {
     override fun apply (valueChange: TextFormatter.Change?): TextFormatter.Change? {
@@ -52,14 +54,26 @@ class FixedDecimalFilter(private val decimalPlaces: Int): UnaryOperator<TextForm
         val decimalPos = text.indexOf(".").let { if (it == -1) text.length else it }
         val caretPos = valueChange.controlCaretPosition
 
+        // Handles flipping states toggle between decimal and negative using "." & "-"
         handleToggleKeys(valueChange, decimalPos, caretPos)?.let { return it }
+        // Prevents decimal boundary crossing
+        handleCrossDecimalSelection(valueChange, decimalPos)
+        // Restricts selection to integer portion
+        handleFullSelection(valueChange, decimalPos)
 
         if (valueChange.isContentChange && caretPos > decimalPos)
+            // pads if to few digits, trims if to many
             adjustDecimalLength(valueChange, decimalPos)
 
         return if (valueChange.controlNewText.matches("-?([0-9]*)?(\\.[0-9]*)?".toRegex())) valueChange else null
     }
 
+    /**
+     * Helper function that acts as a state toggler between the portions with "." and handling removing and adding "-" to input
+     *
+     *      "." Jumps and moves cursor to the decimal portion
+     *      "-" Adds or removes minus sign
+     */
     private fun handleToggleKeys(change: TextFormatter.Change, decimalPos: Int, caretPos: Int): TextFormatter.Change? {
         return when (change.text) {
             "." -> {
@@ -94,6 +108,40 @@ class FixedDecimalFilter(private val decimalPlaces: Int): UnaryOperator<TextForm
         }
     }
 
+    /**
+     * Helper function that restricts selection to the integer portion on entire text selection
+     */
+    private fun handleFullSelection(change: TextFormatter.Change, decimalPos: Int): TextFormatter.Change? {
+        if (change.selection.start == 0 && change.selection.end == change.controlText.length) {
+            change.selectRange(0, decimalPos)
+            return change
+        }
+        return null
+    }
+
+    /**
+     * Helper function that prevents cross decimal boundary selection
+     */
+    private fun handleCrossDecimalSelection(change: TextFormatter.Change, decimalPos: Int): TextFormatter.Change? {
+        if (change.anchor <= decimalPos && change.caretPosition > decimalPos) {
+            change.selectRange(0, decimalPos)
+            return change
+        }
+
+        if (change.anchor > decimalPos && change.caretPosition <= decimalPos) {
+            change.selectRange(decimalPos + 1, change.controlText.length)
+            return change
+        }
+
+        return null
+    }
+
+    /**
+     * Helper function that ensures correct decimal digits positions
+     *
+     *      2 decimals -> 12.3 -> 12.30
+     *      2 decimals -> 12.345 -> 12.34
+     */
     private fun adjustDecimalLength(change: TextFormatter.Change, decimalPos: Int) {
         val newText = change.controlNewText
         val decimalLength = newText.length - decimalPos - 1
