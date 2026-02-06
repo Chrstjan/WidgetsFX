@@ -41,7 +41,7 @@ val Scene.rootChildren: ObservableList<Node>
     get() = when (val r = root) {
         is Group -> r.children
         is Pane -> r.children
-        else -> error("Scene root must be a Group or Pane to access children!")
+        else -> error("Parent cannot contain children")
     }
 
 var Scene.rootChild: Node

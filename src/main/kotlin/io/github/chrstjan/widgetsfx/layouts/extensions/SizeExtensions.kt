@@ -2,15 +2,7 @@
 
 package io.github.chrstjan.widgetsfx.layouts.extensions
 
-import javafx.geometry.Insets
 import javafx.scene.layout.Region
-
-/**
- * Infix extension function that adds equally padding amount to all sides of a Region
- *
- * @param padSize The amount of padding to apply to all sides
- */
-infix fun <T : Region> T.padWith(padSize: Double): T = apply { padding = Insets(padSize) }
 
 /**
  * Infix extension function to specify the min width of a Region
